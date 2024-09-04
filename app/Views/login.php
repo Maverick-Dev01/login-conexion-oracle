@@ -12,7 +12,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Expletus+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-  <title>Inicio de Sesión - Gestión de Proyectos</title>
+  <title>Inicio de Sesión</title>
 
   <style>
     .bg-image {
@@ -65,6 +65,10 @@
       font-size: 1.25rem;
       /* Ajusta el tamaño de la fuente según sea necesario */
     }
+
+    .relative h1{
+      font-family: 'Expletus Sans', sans-serif;
+    }
   </style>
 </head>
 
@@ -81,6 +85,14 @@
 
     <div class="relative z-10 max-w-md w-full bg-white rounded-lg shadow-lg p-8">
       <h1 class="text-3xl font-semibold text-center mb-6">Inicio de Sesión</h1>
+      
+      <!-- Mensajes de error -->
+      <?php if(session()->getFlashdata('error')): ?>
+        <div class="text-red-600 text-center mb-4">
+          <?= session()->getFlashdata('error') ?>
+        </div>
+      <?php endif; ?>
+      
       <form action="<?php echo base_url('/login') ?>" method="POST" class="space-y-4">
         <div>
           <label for="usuario" class="block text-sm font-medium text-gray-700">Usuario</label>
@@ -105,6 +117,3 @@
 </body>
 
 </html>
-
-
-

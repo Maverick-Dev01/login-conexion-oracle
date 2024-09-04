@@ -8,13 +8,13 @@
     <table border="1">
         <tr>
             <th>Nombre</th>
-            <th>Email</th>
+            <th>Descripcion</th>
         </tr>
         <?php if (!empty($usuarios) && is_array($usuarios)) : ?>
             <?php foreach ($usuarios as $usuario): ?>
             <tr>
-                <td><?php echo $usuario['NOMBRE']; ?></td>
-                <td><?php echo $usuario['EMAIL']; ?></td>
+                <td><?php echo $usuario['NOMBRE_ROL']; ?></td>
+                <td><?php echo $usuario['DESCRIPCION']; ?></td>
             </tr>
             <?php endforeach; ?>
         <?php else : ?>

@@ -13,7 +13,7 @@ class TestController extends Controller
         $db = Database::connect(); // Establece la conexión a la base de datos
 
         // Ejecutar una consulta para obtener datos de la tabla 'usuario'
-        $query = $db->query('SELECT * FROM usuario'); // Ejecuta la consulta SQL
+        $query = $db->query('SELECT * FROM USUARIO'); // Ejecuta la consulta SQL
 
         // Obtener los resultados
         $result = $query->getResult(); // Obtiene los resultados de la consulta en un array de objetos
