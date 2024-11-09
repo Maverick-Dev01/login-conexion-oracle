@@ -14,7 +14,7 @@ class UsuarioModel extends Model
     
     // Define los campos que se pueden insertar o actualizar en la base de datos (en mayúsculas)
     protected $allowedFields = [
-        'ID_ROL',
+        'NO_USUARIO',           // Número de usuario
         'NOMBRE',
         'APELLIDO_PATERNO',
         'APELLIDO_MATERNO',
@@ -22,14 +22,12 @@ class UsuarioModel extends Model
         'EMAIL',
         'USUARIO',
         'CONTRASENIA',
+        'ID_ROL',
         'FECHA_CREACION',
         'ACTUALIZADO_POR',
         'FECHA_ACTUALIZACION'
     ];
 
-    // Indica que la clave primaria se auto-incrementa
-    protected $useAutoIncrement = true;
-    
     // Define el tipo de retorno de los resultados de las consultas
     protected $returnType = 'array';
     
@@ -39,7 +37,7 @@ class UsuarioModel extends Model
     /**
      * Inserta un nuevo usuario en la tabla USUARIO.
      * 
-     * Este método utiliza una secuencia de base de datos (seq_usuario_id) 
+     * Este método utiliza una secuencia de base de datos (seq_id_usuario) 
      * para obtener un nuevo ID de usuario antes de insertar el registro.
      * 
      * @param array $data Los datos del usuario que se van a insertar.
@@ -49,17 +47,16 @@ class UsuarioModel extends Model
     {
         // Conecta a la base de datos
         $db = \Config\Database::connect();
-        // Crea un constructor de consultas para la tabla USUARIO
-        $builder = $db->table($this->table);
 
-        // Ejecuta una consulta para obtener el siguiente valor de la secuencia seq_usuario_id
-        $query = $db->query("SELECT seq_usuario_id.NEXTVAL as id FROM DUAL");
+        // Ejecuta una consulta para obtener el siguiente valor de la secuencia seq_id_usuario
+        $query = $db->query("SELECT seq_id_usuario.NEXTVAL as ID FROM DUAL");
         $row = $query->getRow();
+        
         // Asigna el nuevo ID de usuario al arreglo de datos (en mayúsculas)
-        $data['ID_USUARIO'] = $row->id;
+        $data['ID_USUARIO'] = $row->ID;
 
         // Inserta los datos del usuario en la tabla USUARIO
-        return $builder->insert($data);
+        return $this->insert($data);
     }
 
     /**

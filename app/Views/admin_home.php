@@ -18,14 +18,13 @@
 
 <body>
 
-
     <!-- Header -->
     <div class="header">
         <img src="<?php echo base_url('img/eks.png'); ?>" alt="Logo">
         <h2>DigiManager</h2>
         <div class="user-menu">
             <button>
-                <?= session()->get('usuario'); ?> <span class="arrow">▼</span>
+                Administrador <span class="arrow">▼</span>
             </button>
             <div class="user-menu-content">
                 <a href="<?php echo base_url('/logout'); ?>">Logout</a>
@@ -34,16 +33,18 @@
     </div>
 
     <div class="container">
-        <h1>Bienvenido, Administrador</h1>
+        <h1>Bienvenido, <?= session()->get('usuario'); ?></h1>
         <div class="cards">
-            <a href="<?php echo base_url('/usuarios'); ?>" class="card">
-                <img src="<?php echo base_url('img/icon_usuario_alta.png'); ?>" alt="Usuarios">
+            <a href="<?php echo base_url('/usuarios/crear'); ?>" class="card">
+                <img src="<?php echo base_url('img/icon_usuario_alta.png'); ?>" alt="Alta Usuarios">
                 <span>Alta Usuarios</span>
             </a>
-            <a href="<?php echo base_url('/proyectos'); ?>" class="card">
-                <img src="<?php echo base_url('img/icon_ver_usuario.png'); ?>" alt="Proyectos">
+
+            <a href="<?php echo base_url('/usuarios'); ?>" class="card">
+                <img src="<?php echo base_url('img/icon_ver_usuario.png'); ?>" alt="Ver Usuarios">
                 <span>Ver Usuarios</span>
             </a>
+
             <a href="<?php echo base_url('/reportes'); ?>" class="card">
                 <img src="<?php echo base_url('img/icon_permisos.png'); ?>" alt="Reportes">
                 <span>Permisos</span>

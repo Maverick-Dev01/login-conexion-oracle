@@ -30,7 +30,7 @@ class LoginController extends Controller
 
         if ($user) { // si el usuario se encuentra, entonces
             // Verifica la contraseña usando password_verify
-            if (password_verify($password, $user['CONTRASENIA'])) {//compara la contraseña ingresada con la almacenada (previamente hasheada).
+            if ($password === $user['CONTRASENIA']) {
                 // Guarda la información del usuario en la sesión
                 $session->set([
                     'id_usuario' => $user['ID_USUARIO'],
@@ -38,11 +38,12 @@ class LoginController extends Controller
                     'id_rol' => $user['ID_ROL'],
                     'logged_in' => true
                 ]);
-                //si la verificación es exitosa, lo redirige a la vista dashboard
+            
                 return redirect()->to('/dashboard');
-            } else {// en caso contrario, lo deja en la misma vista y le indica el error, si es la contraseña
+            } else {
                 return redirect()->back()->with('error', 'Contraseña incorrecta.');
             }
+            
             
         } else {
             // Usuario no encontrado

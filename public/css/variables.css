@@ -1,7 +1,7 @@
 /* variables.css */
 :root {
     --color-primario: #003366; /* Azul Oscuro */
-    --color-secundario: #28a745; /* Verde */
+    --color-secundario: #09c25c; /* Verde */
     --color-advertencia: #ffc107; /* Amarillo */
     --color-fondo: #f8f9fa; /* Gris claro */
     --color-texto: #343a40; /* Gris oscuro */
@@ -9,4 +9,5 @@
     --color-azul-claro: #e7f3ff; /* Azul claro para campos de texto */
     --color-azul-oscuro: #5f35ff; /* Azul oscuro para botón "Acceder" */
     --color-gris-claro: #6c757d; /* Gris claro para enlaces y pie de página */
+    --color-header: #1b233b;
 }

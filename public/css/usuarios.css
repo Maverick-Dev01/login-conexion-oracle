@@ -1,0 +1,26 @@
+.sidebar {
+    transition: width 0.3s;
+}
+
+.sidebar-collapsed {
+    width: 80px;
+}
+
+.sidebar-expanded {
+    width: 250px;
+}
+
+.sidebar-expanded ul li span {
+    display: inline;
+}
+
+.sidebar-collapsed ul li span {
+    display: none;
+}
+
+.sidebar ul li:hover span {
+    display: inline;
+}
+.icon{
+    font-size: 24px;
+}

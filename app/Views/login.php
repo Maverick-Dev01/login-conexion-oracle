@@ -102,9 +102,9 @@
           <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
           <input type="password" name="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
         </div>
-        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Acceder</button>
+        <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Acceder</button>
         <div class="text-center mt-4">
-          <a href="/forgot-password" class="text-indigo-400 hover:text-indigo-600 text-sm">¿Olvidaste tu contraseña?</a>
+          <a href="/forgot-password" class="text-green-600 hover:text-green-700 text-sm">¿Olvidaste tu contraseña?</a>
         </div>
       </form>
       <div class="text-center mt-6">

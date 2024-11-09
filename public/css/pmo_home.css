@@ -11,7 +11,7 @@
 
 /* Encabezado */
 .header {
-    background-color: var(--color-primario);
+    background-color: var(--color-header);
     padding: 10px;
     color: var(--color-blanco);
     display: flex;
@@ -37,7 +37,6 @@
 }
 
 .header .user-menu button {
-    background-color: var(--color-primario);
     border: none;
     color: var(--color-blanco);
     cursor: pointer;
