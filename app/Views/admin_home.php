@@ -45,8 +45,8 @@
                 <span>Ver Usuarios</span>
             </a>
 
-            <a href="<?php echo base_url('/reportes'); ?>" class="card">
-                <img src="<?php echo base_url('img/icon_permisos.png'); ?>" alt="Reportes">
+            <a href="<?php echo base_url('/permisos'); ?>" class="card">
+                <img src="<?php echo base_url('img/icon_permisos.png'); ?>" alt="Permisos">
                 <span>Permisos</span>
             </a>
             <a href="<?php echo base_url('/configuracion'); ?>" class="card">

@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Models\UsuarioModel;
 use App\Models\RolModel;
 use CodeIgniter\Controller;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class UsuariosController extends Controller
 {
@@ -12,14 +14,36 @@ class UsuariosController extends Controller
     public function index()
     {
         $usuarioModel = new UsuarioModel();
+        $rolModel = new RolModel();
+    
         $query = $this->request->getGet('query');
         
+        // Obtener los usuarios basados en el término de búsqueda si existe
         $usuarios = $query
-            ? $usuarioModel->like('NOMBRE', $query)->orLike('APELLIDO_PATERNO', $query)->orLike('EMAIL', $query)->findAll()
+            ? $usuarioModel->like('NOMBRE', $query)
+                           ->orLike('APELLIDO_PATERNO', $query)
+                           ->orLike('EMAIL', $query)
+                           ->findAll()
             : $usuarioModel->findAll();
-
-        return view('usuarios/lista', ['usuarios' => $usuarios, 'query' => $query]);
+        
+        // Obtener todos los roles y crear un mapa de ID de rol a nombre de rol
+        $roles = $rolModel->findAll();
+        $rolMap = [];
+        foreach ($roles as $rol) {
+            $rolMap[$rol['ID_ROL']] = $rol['NOMBRE_ROL'];
+        }
+    
+        // Asignar el nombre del rol a cada usuario
+        foreach ($usuarios as &$usuario) {
+            $usuario['NOMBRE_ROL'] = $rolMap[$usuario['ID_ROL']] ?? 'Desconocido';
+        }
+    
+        return view('usuarios/lista', [
+            'usuarios' => $usuarios,
+            'query' => $query
+        ]);
     }
+    
 
     public function create()
     {
@@ -119,23 +143,106 @@ class UsuariosController extends Controller
     }
 
     // Exporta los usuarios a un archivo CSV
-    public function exportar()
-    {
-        $usuarioModel = new UsuarioModel();
-        $usuarios = $this->request->getPost('usuarios')
-            ? $usuarioModel->whereIn('ID_USUARIO', $this->request->getPost('usuarios'))->findAll()
-            : $usuarioModel->findAll();
+    public function exportarCSV()
+{
+    $usuarioModel = new UsuarioModel();
 
-        header("Content-Type: text/csv");
-        header("Content-Disposition: attachment; filename=usuarios.csv");
-        $output = fopen("php://output", "w");
+    // Obtener los IDs seleccionados desde el formulario
+    $usuariosIds = $this->request->getPost('usuarios');
 
-        fputcsv($output, array('ID_USUARIO', 'NO_USUARIO', 'NOMBRE', 'APELLIDO_PATERNO', 'APELLIDO_MATERNO', 'TELEFONO', 'EMAIL', 'USUARIO', 'ROL'));
-        foreach ($usuarios as $usuario) {
-            fputcsv($output, $usuario);
-        }
-
-        fclose($output);
-        exit;
+    // Validar si hay IDs seleccionados
+    if (empty($usuariosIds)) {
+        return redirect()->back()->with('error', 'No se seleccionó ningún usuario.');
     }
+
+    // Obtener solo los usuarios seleccionados
+    $usuarios = $usuarioModel->whereIn('ID_USUARIO', $usuariosIds)->findAll();
+
+    // Establecer cabeceras para la descarga del archivo CSV
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="usuarios_seleccionados.csv"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+
+    // Abrir el flujo de salida de PHP para escribir en él
+    $output = fopen('php://output', 'w');
+
+    // Escribir los encabezados del CSV
+    fputcsv($output, ['ID_USUARIO', 'NO_USUARIO', 'NOMBRE', 'APELLIDO_PATERNO', 'APELLIDO_MATERNO', 'TELEFONO', 'EMAIL', 'USUARIO', 'ROL']);
+
+    // Escribir los datos de los usuarios seleccionados
+    foreach ($usuarios as $usuario) {
+        fputcsv($output, [
+            $usuario['ID_USUARIO'],
+            $usuario['NO_USUARIO'],
+            $usuario['NOMBRE'],
+            $usuario['APELLIDO_PATERNO'],
+            $usuario['APELLIDO_MATERNO'],
+            $usuario['TELEFONO'],
+            $usuario['EMAIL'],
+            $usuario['USUARIO'],
+            $usuario['ID_ROL']
+        ]);
+    }
+
+    // Cerrar el flujo de salida
+    fclose($output);
+    exit;
+}
+
+public function exportToPDF()
+{
+    $usuarioModel = new UsuarioModel();
+    $usuarios = $usuarioModel->findAll();
+
+    // Configurar opciones de Dompdf
+    $options = new Options();
+    $options->set('defaultFont', 'Helvetica');
+    $dompdf = new Dompdf($options);
+
+    // Crear el contenido HTML para el PDF
+    $html = '<html><head><style>
+                body { font-family: Helvetica, Arial, sans-serif; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+                th { background-color: #4CAF50; color: white; }
+             </style></head><body>';
+    $html .= '<h2 style="text-align: center;">Lista de Usuarios</h2>';
+    $html .= '<table><thead><tr>
+                <th>ID</th>
+                <th>Número de Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+             </tr></thead><tbody>';
+
+    foreach ($usuarios as $usuario) {
+        $html .= '<tr>
+                    <td>' . $usuario['ID_USUARIO'] . '</td>
+                    <td>' . $usuario['NO_USUARIO'] . '</td>
+                    <td>' . $usuario['NOMBRE'] . '</td>
+                    <td>' . $usuario['APELLIDO_PATERNO'] . '</td>
+                    <td>' . $usuario['APELLIDO_MATERNO'] . '</td>
+                    <td>' . $usuario['TELEFONO'] . '</td>
+                    <td>' . $usuario['EMAIL'] . '</td>
+                    <td>' . $usuario['USUARIO'] . '</td>
+                    <td>' . $usuario['ID_ROL'] . '</td>
+                 </tr>';
+    }
+
+    $html .= '</tbody></table></body></html>';
+
+    // Generar el PDF
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    // Descargar el archivo PDF
+    $dompdf->stream('lista_usuarios.pdf', array("Attachment" => 1));
+}
+    
 }

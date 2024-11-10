@@ -1,61 +1,81 @@
-<!-- Modal de Visualización de Usuario -->
-<div id="userModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg shadow-lg w-1/2 p-6 relative">
-        <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Detalles del Usuario</h2>
-        <div class="space-y-4">
-            <div class="flex justify-between">
-                <span class="font-semibold">ID:</span>
-                <span><?= $usuario['ID_USUARIO']; ?></span>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Proyecto</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo base_url('css/patterns.css'); ?>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div id="projectDetails" class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h2 class="text-3xl font-bold text-gray-700 mb-6 text-center">Detalles del Proyecto</h2>
+        
+        <div class="space-y-4 text-lg">
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-semibold text-gray-600">ID del Proyecto:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['ID_PROYECTO']; ?></span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Número de Usuario:</span>
-                <span><?= $usuario['NO_USUARIO']; ?></span>
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-semibold text-gray-600">Nombre del Proyecto:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['NOMBRE_PROYECTO']; ?></span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Nombre:</span>
-                <span><?= $usuario['NOMBRE']; ?></span>
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-semibold text-gray-600">Descripción:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['DESCRIPCION']; ?></span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Apellido Paterno:</span>
-                <span><?= $usuario['APELLIDO_PATERNO']; ?></span>
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-semibold text-gray-600">Fecha de Inicio:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['FECHA_INICIO']; ?></span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Apellido Materno:</span>
-                <span><?= $usuario['APELLIDO_MATERNO']; ?></span>
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-semibold text-gray-600">Fecha de Finalización:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['FECHA_FIN']; ?></span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Teléfono:</span>
-                <span><?= $usuario['TELEFONO']; ?></span>
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-semibold text-gray-600">Estado:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['ESTADO']; ?></span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Email:</span>
-                <span><?= $usuario['EMAIL']; ?></span>
-            </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Usuario:</span>
-                <span><?= $usuario['USUARIO']; ?></span>
-            </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Rol:</span>
-                <span><?= $usuario['ID_ROL']; ?></span>
+            <div class="flex justify-between items-center">
+                <span class="font-semibold text-gray-600">Responsable:</span>
+                <span class="text-gray-800 font-medium"><?= $proyecto['RESPONSABLE']; ?></span>
             </div>
         </div>
+
+        <!-- Botones de Regresar y Exportar a PDF -->
+        <div class="mt-6 flex justify-center space-x-4">
+            <!-- Botón de Regresar -->
+            <a href="javascript:history.back()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Regresar
+            </a>
+
+            <!-- Botón para Exportar a PDF usando jsPDF en el cliente -->
+            <button onclick="exportToPDF()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+                Exportar a PDF
+            </button>
+        </div>
     </div>
-</div>
 
-<script>
-    // Función para abrir el modal
-    function openModal() {
-        document.getElementById('userModal').classList.remove('hidden');
-    }
+    <script>
+        // Función para exportar los detalles a PDF usando jsPDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-    // Función para cerrar el modal
-    function closeModal() {
-        document.getElementById('userModal').classList.add('hidden');
-    }
-</script>
+            doc.setFontSize(18);
+            doc.text("Detalles del Proyecto", 20, 20);
+
+            // Obtenemos el contenido del div con ID "projectDetails"
+            const projectDetails = document.getElementById("projectDetails").innerText;
+            doc.setFontSize(12);
+            doc.text(projectDetails, 20, 30);
+
+            // Guardamos el PDF
+            doc.save("detalles_proyecto.pdf");
+        }
+    </script>
+
+</body>
+</html>
