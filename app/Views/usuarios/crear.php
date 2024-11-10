@@ -15,6 +15,13 @@
         <button id="openModalBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Crear Usuario</button>
     </div>
 
+    <div class="container mx-auto mt-6"></div>
+    <a href="<?php echo base_url('/usuarios'); ?>" class="card">
+        <button id="openModalBtn" class="bg-blue-500 text-white px-4 py-2 rounded">regresar</button>
+
+    </a>
+    </div>
+
     <!-- Modal -->
     <div id="userModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg shadow-lg w-2/3 p-6 relative">
@@ -91,12 +98,14 @@
     <!-- Scripts -->
     <script>
         // Abrir el modal
-        document.getElementById('openModalBtn').addEventListener('click', function () {
+        document.getElementById('openModalBtn').addEventListener('click', function() {
             document.getElementById('userModal').classList.remove('hidden');
         });
 
+
+
         // Cerrar el modal
-        document.getElementById('closeModalBtn').addEventListener('click', function () {
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
             document.getElementById('userModal').classList.add('hidden');
         });
     </script>

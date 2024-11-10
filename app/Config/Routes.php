@@ -21,6 +21,10 @@ $routes->get('/usuarios', 'UsuariosController::index');  // Muestra la lista de 
 $routes->get('/usuarios/crear', 'UsuariosController::create');  // Muestra el formulario de creación de usuarios
 $routes->post('/usuarios/guardar', 'UsuariosController::store');  // Guarda el nuevo usuario
 $routes->post('/usuarios/eliminar', 'UsuariosController::eliminar');  // Elimina usuarios seleccionados
+$routes->get('/usuarios/ver/(:num)', 'UsuariosController::show/$1');
+$routes->get('/usuarios/editar/(:num)', 'UsuariosController::edit/$1');
+$routes->post('/usuarios/update/(:num)', 'UsuariosController::update/$1');
+
 
 // Ruta adicional comentada para hashear contraseñas en la base de datos
 // $routes->get('/hash-passwords', 'LoginController::hashExistingPasswords');

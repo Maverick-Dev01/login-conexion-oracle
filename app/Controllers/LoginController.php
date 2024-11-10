@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Controllers; 
+namespace App\Controllers;
 
-use App\Models\UsuarioModel; 
+use App\Models\UsuarioModel;
 use CodeIgniter\Controller;
 
-// El propósito principal de este controlador es manejar las operaciones relacionadas con el inicio de sesión de los usuarios, 
-// como la autenticación, el cierre de sesión, y también (aunque está comentado) la actualización de las contraseñas en la base de datos.
 class LoginController extends Controller
 {
     public function index()
@@ -17,18 +15,16 @@ class LoginController extends Controller
 
     public function authenticate()
     {
-        $session = session(); // se inicializa una sesión
-        $model = new UsuarioModel(); // se crea la instancia del modelo, para interactuar con la base de datos
+        $session = session();
+        $model = new UsuarioModel();
 
-        //Obtención de datos: Se obtienen los valores enviados en el 
-        //formulario de inicio de sesión (usuario y contraseña).
         $username = $this->request->getPost('usuario');
         $password = $this->request->getPost('password');
 
-        // se hace una busqueda en la base de datos utilizando el nombre de usuario
+        // Obtén el usuario por su nombre de usuario
         $user = $model->getUsuarioByUsername($username);
 
-        if ($user) { // si el usuario se encuentra, entonces
+        if ($user) {
             // Verifica la contraseña usando password_verify
             if ($password === $user['CONTRASENIA']) {
                 // Guarda la información del usuario en la sesión
@@ -44,17 +40,30 @@ class LoginController extends Controller
                 return redirect()->back()->with('error', 'Contraseña incorrecta.');
             }
             
-            
         } else {
             // Usuario no encontrado
             return redirect()->back()->with('error', 'Usuario no encontrado.');
         }
     }
 
-    public function logout()// función para cerrar la sesión del usuario, lo redirige a la vista login
+    public function logout()
     {
         $session = session();
         $session->destroy();
         return redirect()->to('/login');
     }
+
+//     public function hashExistingPasswords()
+// {
+//     $db = \Config\Database::connect();
+//     $usuarios = $db->query("SELECT * FROM USUARIO")->getResultArray();
+
+//     foreach ($usuarios as $usuario) {
+//         $hashedPassword = password_hash($usuario['CONTRASENIA'], PASSWORD_DEFAULT);
+//         $db->query("UPDATE USUARIO SET CONTRASENIA = '$hashedPassword' WHERE id_usuario = " . $usuario['ID_USUARIO']);
+//     }
+
+//     echo "Contraseñas actualizadas correctamente.";
+// }
+
 }

@@ -8,44 +8,33 @@ use CodeIgniter\Controller;
 
 class UsuariosController extends Controller
 {
-    /**
-     * Muestra la lista de todos los usuarios.
-     */
+    // Muestra la lista de usuarios
     public function index()
     {
-        // Crea una instancia del modelo UsuarioModel
         $usuarioModel = new UsuarioModel();
-        // Obtiene todos los usuarios de la base de datos
-        $data['usuarios'] = $usuarioModel->findAll();
+        $query = $this->request->getGet('query');
+        
+        $usuarios = $query
+            ? $usuarioModel->like('NOMBRE', $query)->orLike('APELLIDO_PATERNO', $query)->orLike('EMAIL', $query)->findAll()
+            : $usuarioModel->findAll();
 
-        // Carga la vista 'usuarios/lista' pasando la información de los usuarios
-        return view('usuarios/lista', $data);
+        return view('usuarios/lista', ['usuarios' => $usuarios, 'query' => $query]);
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo usuario.
-     */
     public function create()
     {
-        // Crea una instancia del modelo RolModel
         $rolModel = new RolModel();
-        // Obtiene todos los roles de la base de datos
         $data['roles'] = $rolModel->findAll();
-
-        // Carga la vista 'usuarios/crear' pasando la información de los roles
         return view('usuarios/crear', $data);
     }
 
     /**
-     * Este método se encarga de recibir los datos del formulario de creación de usuarios,
-     * procesarlos, y luego guardarlos en la base de datos.
+     * Guarda un nuevo usuario en la base de datos.
      */
     public function store()
     {
-        // Crea una instancia del modelo UsuarioModel
         $usuarioModel = new UsuarioModel();
 
-        // Recoge los datos del formulario y los prepara para la inserción
         $data = [
             'NOMBRE' => $this->request->getPost('nombre'),
             'APELLIDO_PATERNO' => $this->request->getPost('apellido_paterno'),
@@ -55,10 +44,8 @@ class UsuariosController extends Controller
             'USUARIO' => $this->request->getPost('usuario'),
             'CONTRASENIA' => password_hash($this->request->getPost('contrasenia'), PASSWORD_DEFAULT),
             'ID_ROL' => $this->request->getPost('id_rol'),
-            // `NO_USUARIO` se generará automáticamente en el trigger
         ];
 
-        // Inserta el nuevo usuario utilizando la función personalizada que maneja la secuencia
         if ($usuarioModel->insertUsuario($data)) {
             return redirect()->to('/usuarios')->with('success', 'Usuario creado correctamente.');
         } else {
@@ -66,24 +53,89 @@ class UsuariosController extends Controller
         }
     }
 
-    /**
-     * Elimina los usuarios seleccionados.
-     */
+    // Muestra un usuario específico
+    public function show($id)
+    {
+        $usuarioModel = new UsuarioModel();
+        $usuario = $usuarioModel->find($id);
+
+        if (!$usuario) {
+            return redirect()->to('/usuarios')->with('error', 'Usuario no encontrado.');
+        }
+
+        return view('usuarios/ver', ['usuario' => $usuario]);
+    }
+
+    // Muestra el formulario para editar un usuario
+    public function edit($id)
+    {
+        $usuarioModel = new UsuarioModel();
+        $rolModel = new RolModel();
+
+        $usuario = $usuarioModel->find($id);
+        $roles = $rolModel->findAll();
+
+        if (!$usuario) {
+            return redirect()->to('/usuarios')->with('error', 'Usuario no encontrado.');
+        }
+
+        return view('usuarios/editar', ['usuario' => $usuario, 'roles' => $roles]);
+    }
+
+    public function update($id)
+{
+    $usuarioModel = new UsuarioModel();
+
+    $data = [
+        'NOMBRE' => $this->request->getPost('nombre'),
+        'APELLIDO_PATERNO' => $this->request->getPost('apellido_paterno'),
+        'APELLIDO_MATERNO' => $this->request->getPost('apellido_materno'),
+        'TELEFONO' => $this->request->getPost('telefono'),
+        'EMAIL' => $this->request->getPost('email'),
+        'USUARIO' => $this->request->getPost('usuario'),
+        'ID_ROL' => $this->request->getPost('id_rol'),
+    ];
+
+    if ($usuarioModel->update($id, $data)) {
+        return redirect()->to('/usuarios')->with('success', 'Usuario actualizado correctamente.');
+    } else {
+        return redirect()->back()->with('error', 'Error al actualizar el usuario.');
+    }
+}
+
+
+    // Elimina los usuarios seleccionados
     public function eliminar()
     {
-        // Obtén los IDs de los usuarios seleccionados desde el formulario
         $usuariosIds = $this->request->getPost('usuarios');
         
         if (!empty($usuariosIds)) {
             $usuarioModel = new UsuarioModel();
-            // Elimina los usuarios seleccionados
             $usuarioModel->whereIn('ID_USUARIO', $usuariosIds)->delete();
-            
-            // Redirige de vuelta a la lista de usuarios con un mensaje de éxito
             return redirect()->to('/usuarios')->with('success', 'Usuarios eliminados correctamente.');
         } else {
-            // Si no se seleccionaron usuarios, muestra un mensaje de error
             return redirect()->to('/usuarios')->with('error', 'No se seleccionó ningún usuario.');
         }
+    }
+
+    // Exporta los usuarios a un archivo CSV
+    public function exportar()
+    {
+        $usuarioModel = new UsuarioModel();
+        $usuarios = $this->request->getPost('usuarios')
+            ? $usuarioModel->whereIn('ID_USUARIO', $this->request->getPost('usuarios'))->findAll()
+            : $usuarioModel->findAll();
+
+        header("Content-Type: text/csv");
+        header("Content-Disposition: attachment; filename=usuarios.csv");
+        $output = fopen("php://output", "w");
+
+        fputcsv($output, array('ID_USUARIO', 'NO_USUARIO', 'NOMBRE', 'APELLIDO_PATERNO', 'APELLIDO_MATERNO', 'TELEFONO', 'EMAIL', 'USUARIO', 'ROL'));
+        foreach ($usuarios as $usuario) {
+            fputcsv($output, $usuario);
+        }
+
+        fclose($output);
+        exit;
     }
 }
