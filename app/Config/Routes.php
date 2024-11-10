@@ -92,9 +92,24 @@ $routes->post('/tareas/update/(:num)', 'TareaController::update/$1');  // Actual
 $routes->post('/tareas/exportarCSV', 'TareaController::exportarCSV');  // Exporta las tareas seleccionadas a CSV
 
 //gráficos
-$routes->get('/graficas', 'GraficasController::index');
-$routes->get('/graficas/datos/(:segment)', 'GraficasController::getDatosGrafica/$1');
+$routes->get('/graficas', 'GraficasController::seleccion');
+$routes->get('/graficas/proyectos', 'GraficasController::graficaProyectos');
+$routes->get('/graficas/tareas', 'GraficasController::graficaTareas');
+$routes->get('/graficas/exportar', 'GraficasController::exportarGrafica');
+
+// Ruta para obtener datos JSON de proyectos para la gráfica
 $routes->get('/graficas/datos/proyectos', 'GraficasController::getDatosProyectos');
+$routes->get('/graficas/datos/tareas', 'GraficasController::getDatosTareas');
+
+
+$routes->get('/graficas/recursos', 'GraficasController::graficaRecursos');
+$routes->get('/graficas/datos/recursos', 'GraficasController::getDatosRecursos');
+
+
+
+
+
+
 
 
 

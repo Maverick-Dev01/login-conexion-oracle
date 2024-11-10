@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gráfica de Proyectos</title>
+    <title>Gráfica de Tareas</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
@@ -12,10 +12,10 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
     <div class="bg-white shadow-md rounded-lg p-8 max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Progreso de Proyectos</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Estado de Tareas</h2>
 
         <!-- Contenedor de la Gráfica -->
-        <canvas id="graficaProyectos" width="600" height="400"></canvas>
+        <canvas id="graficaTareas" width="600" height="400"></canvas>
 
         <!-- Botones de control -->
         <div class="flex justify-center space-x-4 mt-6">
@@ -25,37 +25,38 @@
     </div>
 
     <script>
-        async function obtenerDatosProyectos() {
+        async function obtenerDatosTareas() {
             const urlParams = new URLSearchParams(window.location.search);
-            const respuesta = await fetch(`/graficas/datos/proyectos?${urlParams}`);
-            const proyectos = await respuesta.json();
-            return proyectos;
+            const respuesta = await fetch(`/graficas/datos/tareas?${urlParams}`);
+            const tareas = await respuesta.json();
+            return tareas;
         }
 
-        async function crearGraficaProyectos() {
-            const proyectos = await obtenerDatosProyectos();
+        async function crearGraficaTareas() {
+            const tareas = await obtenerDatosTareas();
             
-            const etiquetas = proyectos.map(p => p.NOMBRE_PROYECTO);
-            const diasDesvio = proyectos.map(p => p.DIAS_DESVIO ?? 0);
-            const avancePlaneado = proyectos.map(p => p.AVANCE_PLANEADO ?? 0);
-            const avanceReal = proyectos.map(p => p.AVANCE_REAL ?? 0);
+            const etiquetas = tareas.map(t => t.NOMBRE_TAREA);
+            const prioridades = tareas.map(t => t.PRIORIDAD === 'ALTA' ? 100 : (t.PRIORIDAD === 'MEDIA' ? 50 : 25));
+            const estados = tareas.map(t => {
+                switch (t.ESTADO_TAREA) {
+                    case 'EN CURSO': return 75;
+                    case 'PENDIENTE': return 25;
+                    case 'TERMINADA': return 100;
+                    default: return 0;
+                }
+            });
 
             const data = {
                 labels: etiquetas,
                 datasets: [
                     {
-                        label: 'Desvío en Días',
-                        data: diasDesvio,
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)', // Rojo
+                        label: 'Prioridad',
+                        data: prioridades,
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)', // Amarillo
                     },
                     {
-                        label: 'Avance Planeado (%)',
-                        data: avancePlaneado,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)', // Verde
-                    },
-                    {
-                        label: 'Avance Real (%)',
-                        data: avanceReal,
+                        label: 'Estado de Tarea',
+                        data: estados,
                         backgroundColor: 'rgba(54, 162, 235, 0.6)', // Azul
                     }
                 ]
@@ -73,20 +74,20 @@
                         y: {
                             stacked: true,
                             beginAtZero: true,
-                            max: 100
+                            max: 100 // Ajusta según el máximo necesario
                         }
                     }
                 }
             };
 
             new Chart(
-                document.getElementById('graficaProyectos'),
+                document.getElementById('graficaTareas'),
                 config
             );
         }
 
         function exportarGrafica() {
-            const canvas = document.getElementById('graficaProyectos');
+            const canvas = document.getElementById('graficaTareas');
 
             html2canvas(canvas).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
@@ -97,11 +98,11 @@
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                pdf.save('grafica_proyectos.pdf'); // Nombre del archivo PDF
+                pdf.save('grafica_tareas.pdf'); // Nombre del archivo PDF
             });
         }
 
-        document.addEventListener('DOMContentLoaded', crearGraficaProyectos);
+        document.addEventListener('DOMContentLoaded', crearGraficaTareas);
     </script>
 </body>
 </html>
