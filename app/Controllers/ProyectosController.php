@@ -30,7 +30,7 @@ class ProyectosController extends Controller
     }
 
     foreach ($proyectos as &$proyecto) {
-        $proyecto['NOMBRE_CLIENTE'] = $clienteMap[$proyecto['ID_CLIENTE']] ?? 'Desconocido';
+        $proyecto['NOMBRE_COMERCIAL'] = $clienteMap[$proyecto['ID_CLIENTE']] ?? 'Desconocido';
     }
 
     return view('proyectos/lista', [

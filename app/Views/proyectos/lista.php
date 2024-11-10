@@ -36,6 +36,13 @@
                 </li>
 
                 <li>
+                    <a href="<?php echo base_url('/proyectos'); ?>" class="flex items-center p-2 hover:bg-gray-700 rounded-md">
+                        <img src="<?= base_url('img/proyecto.png'); ?>" alt="Proyectos" class="icon">
+                        <span class="ml-3">Proyectos</span>
+                    </a>
+                </li>
+
+                <li>
                     <a href="<?php echo base_url('/clientes'); ?>" class="flex items-center p-2 hover:bg-gray-700 rounded-md">
                         <img src="<?= base_url('img/cliente.png'); ?>" alt="Permisos" class="icon">
                         <span class="ml-3">Clientes</span>
@@ -43,7 +50,7 @@
                 </li>
 
                 <li>
-                    <a href="<?php echo base_url('/recursos'); ?>" class="flex items-center p-2 hover:bg-gray-700 rounded-md">
+                    <a href="<?php echo base_url('/recursos_empleados'); ?>" class="flex items-center p-2 hover:bg-gray-700 rounded-md">
                         <img src="<?= base_url('img/recurso.png'); ?>" alt="Configuraciones" class="icon">
                         <span class="ml-3">Recursos</span>
                     </a>
@@ -60,6 +67,13 @@
                     <a href="<?php echo base_url('/reuniones'); ?>" class="flex items-center p-2 hover:bg-gray-700 rounded-md">
                         <img src="<?= base_url('img/cita.png'); ?>" alt="Configuraciones" class="icon">
                         <span class="ml-3">Reuniones</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?php echo base_url('/graficas'); ?>" class="flex items-center p-2 hover:bg-gray-700 rounded-md">
+                        <img src="<?= base_url('img/grafica.png'); ?>" alt="Graficas" class="icon">
+                        <span class="ml-3">Generar Gráficas</span>
                     </a>
                 </li>
             </ul>
@@ -150,7 +164,7 @@
                                             <td class="px-4 py-2"><?= $proyecto['TIPO']; ?></td>
                                             <td class="px-4 py-2"><?= $proyecto['PRESUPUESTO']; ?></td>
                                             <td class="px-4 py-2"><?= $proyecto['PRIORIDAD']; ?></td>
-                                            <td class="px-4 py-2"><?= $proyecto['NOMBRE_CLIENTE']; ?></td>
+                                            <td class="px-4 py-2"><?= $proyecto['ID_CLIENTE']; ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -166,61 +180,170 @@
     </div>
 
     <!-- Modal para crear proyecto -->
-    <div id="createProjectModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-1/2">
+    <div id="createProjectModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-3/4 max-w-5xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">Crear Proyecto</h2>
                 <button onclick="closeModal()" class="text-red-500 text-xl font-bold">&times;</button>
             </div>
-            <form action="<?= base_url('/proyectos/guardar'); ?>" method="POST">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-700">Nombre del Proyecto:</label>
-                        <input type="text" name="nombre_proyecto" class="w-full border rounded p-2">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700">Área:</label>
-                        <select name="area" class="w-full border rounded p-2">
-                            <option>TÉCNICA</option>
-                            <option>FUNCIONAL</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700">Tipo:</label>
-                        <select name="tipo" class="w-full border rounded p-2">
-                            <option>SOPORTE</option>
-                            <option>DESARROLLO</option>
-                            <option>MANTENIMIENTO</option>
-                            <option>CAMBIO</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700">Presupuesto:</label>
-                        <input type="text" name="presupuesto" class="w-full border rounded p-2">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700">Prioridad:</label>
-                        <select name="prioridad" class="w-full border rounded p-2">
-                            <option>ALTA</option>
-                            <option>MEDIA</option>
-                            <option>BAJA</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700">Cliente:</label>
-                        <select name="id_cliente" class="w-full border rounded p-2">
-                            <?php foreach ($clientes as $cliente): ?>
-                                <option value="<?= $cliente['ID_CLIENTE']; ?>"><?= $cliente['RAZON_SOCIAL']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
+            <form id="projectForm" action="<?= base_url('/proyectos/guardar'); ?>" method="POST">
+                <!-- Sección 1: Información General -->
+                <div id="section1" class="section">
+                    <h3 class="text-xl font-semibold mb-4">Información General</h3>
+                    <div class="grid grid-cols-3 gap-4">
+
+                        <div>
+                            <label class="block text-gray-700">Nombre del Proyecto:</label>
+                            <input type="text" name="nombre_proyecto" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Área:</label>
+                            <select name="area" class="w-full border rounded p-2">
+                                <option>TÉCNICA</option>
+                                <option>FUNCIONAL</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Tipo:</label>
+                            <select name="tipo" class="w-full border rounded p-2">
+                                <option>SOPORTE</option>
+                                <option>DESARROLLO</option>
+                                <option>MANTENIMIENTO</option>
+                                <option>CAMBIO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Detalles:</label>
+                            <textarea name="detalles" class="w-full border rounded p-2"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Presupuesto:</label>
+                            <input type="number" step="0.01" name="presupuesto" class="w-full border rounded p-2">
+                        </div>
                     </div>
                 </div>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg mt-4 hover:bg-green-600">Guardar Proyecto</button>
+
+                <!-- Sección 2: Fechas y Progreso -->
+                <div id="section2" class="section hidden">
+                    <h3 class="text-xl font-semibold mb-4">Fechas y Progreso</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-gray-700">Fecha Inicio Planeado:</label>
+                            <input type="date" name="fecha_inicio_planeado" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Fecha Fin Planeado:</label>
+                            <input type="date" name="fecha_fin_planeado" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Fecha Inicio Real:</label>
+                            <input type="date" name="fecha_inicio_real" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Fecha Fin Real:</label>
+                            <input type="date" name="fecha_fin_real" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Avance Planeado (%):</label>
+                            <input type="number" name="avance_planeado" class="w-full border rounded p-2" min="0" max="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Avance Real (%):</label>
+                            <input type="number" name="avance_real" class="w-full border rounded p-2" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 3: Estado y Cliente -->
+                <div id="section3" class="section hidden">
+                    <h3 class="text-xl font-semibold mb-4">Estado y Cliente</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-gray-700">Días Desvío:</label>
+                            <input type="number" name="dias_desvio" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Fase:</label>
+                            <select name="fase" class="w-full border rounded p-2">
+                                <option>ANÁLISIS</option>
+                                <option>DISEÑO</option>
+                                <option>DESARROLLO</option>
+                                <option>IMPLEMENTACIÓN</option>
+                                <option>AJUSTES</option>
+                                <option>DOCUMENTACIÓN</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Estado del Proyecto:</label>
+                            <select name="estado_proyecto" class="w-full border rounded p-2">
+                                <option>COMENZADO</option>
+                                <option>EN CURSO</option>
+                                <option>PENDIENTE</option>
+                                <option>FINALIZADO</option>
+                                <option>CANCELADO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Cliente:</label>
+                            <select name="id_cliente" class="w-full border rounded p-2">
+                                <?php foreach ($clientes as $cliente): ?>
+                                    <option value="<?= $cliente['ID_CLIENTE']; ?>"><?= $cliente['RAZON_SOCIAL']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegación de secciones -->
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevSection()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hidden" id="prevButton">Anterior</button>
+                    <button type="button" onclick="nextSection()" class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="nextButton">Siguiente</button>
+                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hidden" id="submitButton">Guardar Proyecto</button>
+                </div>
             </form>
         </div>
     </div>
 
+
     <script>
+        let currentSection = 1;
+
+        function showSection(section) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            // Mostrar la sección actual
+            document.getElementById('section' + section).classList.remove('hidden');
+
+            // Control de botones de navegación
+            document.getElementById('prevButton').classList.toggle('hidden', section === 1);
+            document.getElementById('nextButton').classList.toggle('hidden', section === 3);
+            document.getElementById('submitButton').classList.toggle('hidden', section !== 3);
+        }
+
+        function nextSection() {
+            if (currentSection < 3) {
+                currentSection++;
+                showSection(currentSection);
+            }
+        }
+
+        function prevSection() {
+            if (currentSection > 1) {
+                currentSection--;
+                showSection(currentSection);
+            }
+        }
+
+        function openModal() {
+            document.getElementById('createProjectModal').classList.remove('hidden');
+            currentSection = 1; // Reiniciar a la primera sección al abrir
+            showSection(currentSection);
+        }
+
+        function closeModal() {
+            document.getElementById('createProjectModal').classList.add('hidden');
+        }
+
         function openModal() {
             document.getElementById('createProjectModal').classList.remove('hidden');
         }
@@ -228,6 +351,8 @@
         function closeModal() {
             document.getElementById('createProjectModal').classList.add('hidden');
         }
+
+
 
         document.getElementById('select-all').addEventListener('click', function(event) {
             const checkboxes = document.querySelectorAll('input[name="proyectos[]"]');

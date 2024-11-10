@@ -44,7 +44,7 @@
                 <span>Alta Clientes</span>
             </a>
 
-            <a href="<?php echo base_url('/recursos'); ?>" class="card">
+            <a href="<?php echo base_url('/recursos_empleados'); ?>" class="card">
                 <img src="<?php echo base_url('img/icon_recurso.png'); ?>" alt="Recurso">
                 <span>Alta Recursos</span>
             </a>
@@ -54,12 +54,12 @@
                 <span>Alta Tareas</span>
             </a>
 
-            <a href="<?php echo base_url('/reunion'); ?>" class="card">
+            <a href="<?php echo base_url('/reuniones'); ?>" class="card">
                 <img src="<?php echo base_url('img/icon_reunion.png'); ?>" alt="Reuniones">
                 <span>Alta Reuniones</span>
             </a>
 
-            <a href="<?php echo base_url('/dashboard'); ?>" class="card">
+            <a href="<?php echo base_url('/graficas'); ?>" class="card">
                 <img src="<?php echo base_url('img/icon_grafica.png'); ?>" alt="Dashboard">
                 <span>Generar Gráficas</span>
             </a>
